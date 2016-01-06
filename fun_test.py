@@ -11,6 +11,11 @@ class newVisitorTest(unittest.TestCase):
         pass
         #self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):       
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text,[row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         self.browser.get('http://localhost:8000')
 
@@ -23,10 +28,17 @@ class newVisitorTest(unittest.TestCase):
         inputbox.send_keys('buy something')
 
         inputbox.send_keys(Keys.ENTER)
+        self.check_for_row_in_list_table('1:buy something')
 
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1:buy something',[row.text for row in rows])
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('buy another')
+        inputbox.send_keys(Keys.ENTER)
+
+        self.check_for_row_in_list_table('1:buy something')
+        self.check_for_row_in_list_table('2:buy another')
+
+
+
         
         self.fail('finish')
 
