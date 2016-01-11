@@ -46,14 +46,31 @@ class HomePageTest(TestCase):
         self.assertEqual(Item.objects.count(),1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, "A new list item")
-        
-        #print(response.content.decode())
-        self.assertIn('A new list item', response.content.decode())
-        csrf_token_value = get_token(request)
-        expected_html = render_to_string('home.html',{'new_item_text':'A new list item','csrf_token':csrf_token_value})
-        #print(expected_html)
-        #print(response.content.decode())
-        self.assertEqual(response.content.decode(), expected_html)
+
+    def test_home_pages_redirects_after_POST(self):
+        request = HttpRequest()
+        request.method='POST'
+        request.POST['item_text']='A new list item'
+        response = home_page(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_home_page_displays_all_list_items(self):
+        Item.objects.create(text='item1')
+        Item.objects.create(text='item2')
+
+        request = HttpRequest()
+        response = home_page(request)
+
+        self.assertIn('item1', response.content.decode())
+        self.assertIn('item2', response.content.decode())
+
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Item.objects.count(),0)
 
     
 # Create your tests here.
