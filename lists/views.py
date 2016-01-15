@@ -2,7 +2,9 @@ from django.shortcuts import render,redirect
 from lists.models import Item
 #from django.http import HttpResponse
 def home_page(request):
+    print(request.method)
     if request.method == 'POST':
+
         Item.objects.create(text=request.POST['item_text'])
         return redirect('/lists/only_list')
     
@@ -12,7 +14,9 @@ def home_page(request):
 
 def view_list(request):
     items =Item.objects.all()
-
+    if request.method == 'POST':
+        Item.objects.create(text=request.POST['item_text'])
+        return redirect('/lists/only_list')
     return render(request, 'list.html',{'items':items})
 
 
