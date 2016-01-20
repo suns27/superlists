@@ -1,15 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from django.test import LiveServerTestCase
+#from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing  import StaticLiveServerTestCase
 
-
-class newVisitorTest(LiveServerTestCase):
+class newVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Chrome(executable_path='c:\python34\chromedriver.exe')
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
-        pass
+        self.browser.refresh()
         self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):       
@@ -17,7 +17,7 @@ class newVisitorTest(LiveServerTestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text,[row.text for row in rows])
 
-    def test_can_start_a_list_and_retrieve_it_later(self):
+    def stest_can_start_a_list_and_retrieve_it_later(self):
         self.browser.get(self.live_server_url)
 
         self.assertIn('To-Do', self.browser.title)
